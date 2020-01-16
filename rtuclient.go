@@ -51,8 +51,8 @@ type RTUClientHandler struct {
 // NewRTUClientHandler allocates and initializes a RTUClientHandler.
 func NewRTUClientHandler(address string) *RTUClientHandler {
 	handler := &RTUClientHandler{}
-	handler.Address = address
-	handler.Timeout = serialTimeout
+	handler.Name = address
+	handler.ReadTimeout = serialTimeout
 	handler.IdleTimeout = serialIdleTimeout
 	return handler
 }
@@ -270,7 +270,7 @@ func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err
 
 	mb.mu.Lock()
 	defer mb.mu.Unlock()
-	data, err := readIncrementally(aduRequest[0], aduRequest[1], mb.port, time.Now().Add(mb.serialPort.Config.Timeout))
+	data, err := readIncrementally(aduRequest[0], aduRequest[1], mb.port, time.Now().Add(mb.serialPort.Config.ReadTimeout))
 	mb.serialPort.logf("modbus: recv % x\n", data[:])
 	aduResponse = data
 	return
@@ -281,12 +281,12 @@ func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err
 func (mb *rtuSerialTransporter) calculateDelay(chars int) time.Duration {
 	var characterDelay, frameDelay int // us
 
-	if mb.BaudRate <= 0 || mb.BaudRate > 19200 {
+	if mb.Baud <= 0 || mb.Baud > 19200 {
 		characterDelay = 750
 		frameDelay = 1750
 	} else {
-		characterDelay = 15000000 / mb.BaudRate
-		frameDelay = 35000000 / mb.BaudRate
+		characterDelay = 15000000 / mb.Baud
+		frameDelay = 35000000 / mb.Baud
 	}
 	return time.Duration(characterDelay*chars+frameDelay) * time.Microsecond
 }

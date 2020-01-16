@@ -31,8 +31,8 @@ type ASCIIClientHandler struct {
 // NewASCIIClientHandler allocates and initializes a ASCIIClientHandler.
 func NewASCIIClientHandler(address string) *ASCIIClientHandler {
 	handler := &ASCIIClientHandler{}
-	handler.Address = address
-	handler.Timeout = serialTimeout
+	handler.Name = address
+	handler.ReadTimeout = serialTimeout
 	handler.IdleTimeout = serialIdleTimeout
 	return handler
 }
